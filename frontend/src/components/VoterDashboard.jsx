@@ -10,6 +10,7 @@ const VoterDashboard = ({ account }) => {
     const [loading, setLoading] = useState(false);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [electionTimes, setElectionTimes] = useState({ startTime: 0, endTime: 0 });
+    const [adminPhone, setAdminPhone] = useState('');
 
     useEffect(() => {
         const init = async () => {
@@ -48,6 +49,8 @@ const VoterDashboard = ({ account }) => {
                 startTime: Number(times[0]),
                 endTime: Number(times[1])
             });
+            const phone = await votingContract.adminPhone();
+            setAdminPhone(phone);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -199,6 +202,15 @@ const VoterDashboard = ({ account }) => {
                         <div className="flex items-center gap-4 bg-gray-800/50 p-4 rounded-xl border border-gray-700">
                             <div className={`w-4 h-4 rounded-full ${voterStatus.hasVoted ? 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]' : 'bg-gray-500'}`}></div>
                             <span className="font-medium text-lg">{voterStatus.hasVoted ? 'Vote Cast' : 'Has Not Voted'}</span>
+                        </div>
+                    </div>
+
+                    {/* Support Info */}
+                    <div className="mt-6 pt-6 border-t border-gray-700/50 flex items-center gap-3 text-gray-400">
+                        <span className="bg-purple-500/10 text-purple-400 p-2 rounded-lg text-xl">📞</span>
+                        <div>
+                            <p className="text-xs uppercase tracking-wider font-bold">Need Help?</p>
+                            <p className="text-white font-mono">Contact Admin: <span className="text-purple-400">{adminPhone || 'Loading...'}</span></p>
                         </div>
                     </div>
                 </div>

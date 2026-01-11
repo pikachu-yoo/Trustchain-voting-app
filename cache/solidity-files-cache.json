@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/home/shimura/Desktop/voting-project2/contracts/Voting.sol": {
-      "lastModificationDate": 1764916176259,
-      "contentHash": "119f6280d792c39a9746ab1dcefb93b0",
+      "lastModificationDate": 1767948583722,
+      "contentHash": "e4106546bfe50b1cf9989a869de639d3",
       "sourceName": "contracts/Voting.sol",
       "solcConfig": {
         "version": "0.8.28",

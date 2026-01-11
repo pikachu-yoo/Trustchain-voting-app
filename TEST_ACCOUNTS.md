@@ -6,7 +6,7 @@
 - **RPC URL**: `http://127.0.0.1:8545` (local) or `http://192.168.1.7:8545` (network)
 - **Chain ID**: `31337`
 - **Currency**: ETH
-- **Contract Address**: `0x5FbDB2315678afecb367f032d93F642f64180aa3`
+- **Contract Address**: `0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9`
 
 ## Mnemonic
 

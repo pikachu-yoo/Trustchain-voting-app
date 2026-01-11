@@ -22,6 +22,10 @@ const AdminPanel = ({ account }) => {
     const [maxVoters, setMaxVoters] = useState(100);
     const [maxRegisteredUsers, setMaxRegisteredUsers] = useState(200);
     const [registeredUsers, setRegisteredUsers] = useState([]);
+    const [adminEmail, setAdminEmail] = useState('');
+    const [adminPhone, setAdminPhone] = useState('');
+    const [newEmail, setNewEmail] = useState('');
+    const [newPhone, setNewPhone] = useState('');
 
     useEffect(() => {
         const init = async () => {
@@ -146,6 +150,13 @@ const AdminPanel = ({ account }) => {
             const registeredUsersData = await votingContract.getRegisteredUsers();
             console.log('👥 Fetched registered users:', registeredUsersData.length, 'users');
             setRegisteredUsers(registeredUsersData);
+
+            const email = await votingContract.adminEmail();
+            const phone = await votingContract.adminPhone();
+            setAdminEmail(email);
+            setAdminPhone(phone);
+            setNewEmail(email);
+            setNewPhone(phone);
 
             console.log('✅ Data fetch complete');
         } catch (error) {
@@ -458,6 +469,28 @@ const AdminPanel = ({ account }) => {
         setLoading(false);
     };
 
+    const setAdminContact = async (e) => {
+        e.preventDefault();
+        try {
+            setLoading(true);
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
+            const votingContract = new ethers.Contract(contractAddress, contractABI, signer);
+
+            const tx = await votingContract.setAdminContact(newEmail, newPhone);
+            await tx.wait();
+
+            setAdminEmail(newEmail);
+            setAdminPhone(newPhone);
+            alert('Admin contact updated successfully!');
+        } catch (error) {
+            console.error('Error setting admin contact:', error);
+            alert('Failed to update admin contact');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const getStatusText = (state) => {
         if (state === 0) return "Not Scheduled";
         if (state === 1) return "Voting Open";
@@ -631,6 +664,48 @@ const AdminPanel = ({ account }) => {
                                 ⚠️ Limits can only be changed when election is not scheduled
                             </p>
                         )}
+                    </form>
+                </div>
+
+                {/* Admin Contact Settings */}
+                <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700 shadow-lg mb-12">
+                    <h2 className="text-2xl font-bold mb-6 text-white flex items-center gap-3">
+                        <span className="bg-pink-500/20 text-pink-400 p-2 rounded-lg">📧</span> Contact Settings
+                    </h2>
+                    <form onSubmit={setAdminContact}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label className="block text-gray-400 text-sm mb-2">Admin Email</label>
+                                <input
+                                    type="email"
+                                    className="w-full bg-gray-900/50 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-pink-500 text-white transition-colors"
+                                    value={newEmail}
+                                    onChange={(e) => setNewEmail(e.target.value)}
+                                    placeholder="admin@example.com"
+                                    required
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Current: {adminEmail}</p>
+                            </div>
+                            <div>
+                                <label className="block text-gray-400 text-sm mb-2">Admin Phone</label>
+                                <input
+                                    type="text"
+                                    className="w-full bg-gray-900/50 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-pink-500 text-white transition-colors"
+                                    value={newPhone}
+                                    onChange={(e) => setNewPhone(e.target.value)}
+                                    placeholder="+1234567890"
+                                    required
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Current: {adminPhone}</p>
+                            </div>
+                        </div>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="bg-pink-600 hover:bg-pink-700 text-white px-8 py-3 rounded-lg font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-pink-500/20"
+                        >
+                            Update Contact Info
+                        </button>
                     </form>
                 </div>
 

@@ -6,17 +6,38 @@ import VoterDashboard from './components/VoterDashboard';
 import LandingPage from './components/LandingPage';
 import VoterList from './components/VoterList';
 import VoteDetails from './components/VoteDetails';
+import { ethers } from 'ethers';
+import { contractAddress, contractABI } from './constants';
 
 function AppContent() {
   const [account, setAccount] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [adminContact, setAdminContact] = useState({ email: '', phone: '' });
   const navigate = useNavigate();
 
   const handleLogout = () => {
     setAccount(null);
     setIsAdmin(false);
+    setAdminContact({ email: '', phone: '' });
     navigate('/');
   };
+
+  React.useEffect(() => {
+    const fetchContact = async () => {
+      if (account && !isAdmin && window.ethereum) {
+        try {
+          const provider = new ethers.BrowserProvider(window.ethereum);
+          const votingContract = new ethers.Contract(contractAddress, contractABI, provider);
+          const email = await votingContract.adminEmail();
+          const phone = await votingContract.adminPhone();
+          setAdminContact({ email, phone });
+        } catch (error) {
+          console.error("Error fetching admin contact:", error);
+        }
+      }
+    };
+    fetchContact();
+  }, [account, isAdmin]);
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans text-gray-900">
@@ -36,10 +57,23 @@ function AppContent() {
                 <Link to="/vote-details" className="text-gray-600 hover:text-blue-600 transition-colors">Vote Details</Link>
               </>
             )}
+            {account && !isAdmin && (
+              <div className="flex items-center gap-4">
+                <a
+                  href={`mailto:${adminContact.email}?subject=Complaint/Enquiry/Feedback&body=Issue in voting:`}
+                  className="text-sm bg-blue-50 text-blue-600 px-3 py-1 rounded-full hover:bg-blue-100 transition-colors"
+                >
+                  📧 Send Mail
+                </a>
+                <span className="text-sm text-gray-500 border-l pl-4">
+                  📞 Support: <span className="font-mono font-bold text-gray-700">{adminContact.phone}</span>
+                </span>
+              </div>
+            )}
             {account && (
               <button
                 onClick={handleLogout}
-                className="text-gray-600 hover:text-red-500"
+                className="text-gray-600 hover:text-red-500 font-medium ml-4"
               >
                 Logout
               </button>

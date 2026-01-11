@@ -37,6 +37,8 @@ contract Voting {
     uint256 public maxRegisteredUsers;
     uint256 public startTime;
     uint256 public endTime;
+    string public adminEmail;
+    string public adminPhone;
 
     event CandidateAdded(uint256 id, string name, string party);
     event VoterAuthorized(address voter);
@@ -46,6 +48,7 @@ contract Voting {
     event UserDeleted(address userAddress, string username);
     event ElectionTimesSet(uint256 startTime, uint256 endTime);
     event LimitsUpdated(uint256 maxCandidates, uint256 maxVoters, uint256 maxRegisteredUsers);
+    event AdminContactUpdated(string email, string phone);
 
     modifier onlyAdmin() {
         require(msg.sender == admin, "Only admin can perform this action");
@@ -63,6 +66,14 @@ contract Voting {
         maxCandidates = 10; // Default limit, can be adjustable
         maxVoters = 100; // Default limit
         maxRegisteredUsers = 200; // Default registration limit
+        adminEmail = "admin@trustchain.com"; // Default
+        adminPhone = "+1234567890"; // Default
+    }
+
+    function setAdminContact(string memory _email, string memory _phone) external onlyAdmin {
+        adminEmail = _email;
+        adminPhone = _phone;
+        emit AdminContactUpdated(_email, _phone);
     }
 
     function setLimits(uint256 _maxCandidates, uint256 _maxVoters, uint256 _maxRegisteredUsers) external onlyAdmin {

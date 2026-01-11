@@ -279,7 +279,7 @@ jobs:
 ## 📞 Getting Help
 
 - **Git Documentation**: https://git-scm.com/doc
-- **GitHub Guides**: https://guides.github.com/
+- **Hub Guides**: https://guides.github.com/
 - **Git Cheat Sheet**: https://education.github.com/git-cheat-sheet-education.pdf
 
 ## ✅ Checklist Before Pushing
@@ -294,4 +294,4 @@ jobs:
 
 ---
 
-**Happy Coding! 🎉**
+**Happy Coding! 🎉**Git

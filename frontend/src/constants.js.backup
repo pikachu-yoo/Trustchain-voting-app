@@ -1,28 +1,9 @@
-export const contractAddress = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
+export const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 export const contractABI = [
     {
         "inputs": [],
         "stateMutability": "nonpayable",
         "type": "constructor"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "string",
-                "name": "email",
-                "type": "string"
-            },
-            {
-                "indexed": false,
-                "internalType": "string",
-                "name": "phone",
-                "type": "string"
-            }
-        ],
-        "name": "AdminContactUpdated",
-        "type": "event"
     },
     {
         "anonymous": false,
@@ -207,32 +188,6 @@ export const contractABI = [
                 "internalType": "address",
                 "name": "",
                 "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "adminEmail",
-        "outputs": [
-            {
-                "internalType": "string",
-                "name": "",
-                "type": "string"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "adminPhone",
-        "outputs": [
-            {
-                "internalType": "string",
-                "name": "",
-                "type": "string"
             }
         ],
         "stateMutability": "view",
@@ -598,24 +553,6 @@ export const contractABI = [
     {
         "inputs": [],
         "name": "resetElection",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "string",
-                "name": "_email",
-                "type": "string"
-            },
-            {
-                "internalType": "string",
-                "name": "_phone",
-                "type": "string"
-            }
-        ],
-        "name": "setAdminContact",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
