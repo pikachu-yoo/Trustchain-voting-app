@@ -36,14 +36,11 @@ const VoteDetails = ({ account }) => {
             const voterDetails = await Promise.all(
                 registeredUsers.map(async (user) => {
                     const userInfo = await votingContract.getUserInfo(user.userAddress);
-                    const voterData = await votingContract.voters(user.userAddress);
-
                     return {
                         address: user.userAddress,
                         username: userInfo[0], // username
                         isAuthorized: userInfo[2], // isAuthorized
-                        hasVoted: userInfo[3], // hasVoted
-                        votedCandidateId: voterData.hasVoted ? Number(voterData.votedCandidateId) : null
+                        // hasVoted and votedCandidateId are fetched per-post below
                     };
                 })
             );
@@ -52,17 +49,53 @@ const VoteDetails = ({ account }) => {
 
             // Group voters by candidate
             const votesByCandidate = {};
-            candidatesData.forEach(candidate => {
-                votesByCandidate[candidate.id] = [];
+            candidatesData.forEach(c => {
+                votesByCandidate[c.id] = [];
             });
 
-            voterDetails.forEach(voter => {
-                if (voter.hasVoted && voter.votedCandidateId !== null) {
-                    if (votesByCandidate[voter.votedCandidateId]) {
-                        votesByCandidate[voter.votedCandidateId].push(voter);
+            // For each candidate's post, check if the voter voted for them
+            // We use a Map to track which posts we've already queried for each voter to avoid redundant calls
+            for (const voter of voterDetails) {
+                if (voter.isAuthorized) {
+                    const queriedPosts = new Set();
+                    let hasVotedInAnyElection = false; // To track global "hasVoted" state for Summary Stats
+
+                    for (const candidate of candidatesData) {
+                        const post = candidate.post;
+                        
+                        // Only query the contract once per voter/post combination
+                        let hasVoted = false;
+                        let votedCandidateId = null;
+
+                        if (!queriedPosts.has(post)) {
+                            const voterStatus = await votingContract.getVoterStatus(voter.address, post);
+                            hasVoted = voterStatus[1];
+                            votedCandidateId = Number(voterStatus[2]);
+                            
+                            queriedPosts.add(post);
+                            
+                            // Store the result on the voter object temporarily for this loop iteration
+                            voter[`_hasVoted_${post}`] = hasVoted;
+                            voter[`_votedCandidateId_${post}`] = votedCandidateId;
+                        } else {
+                            hasVoted = voter[`_hasVoted_${post}`];
+                            votedCandidateId = voter[`_votedCandidateId_${post}`];
+                        }
+                        
+                        if (hasVoted) hasVotedInAnyElection = true;
+
+                        // If the voter voted for THIS candidate, add them to the list
+                        if (hasVoted && votedCandidateId === Number(candidate.id)) {
+                             votesByCandidate[candidate.id].push(voter);
+                        }
                     }
+                    
+                    // Mark global hasVoted for the Summary Stats component at the bottom
+                    voter.hasVoted = hasVotedInAnyElection;
+                } else {
+                    voter.hasVoted = false;
                 }
-            });
+            }
 
             setVoteDetails(votesByCandidate);
         } catch (error) {

@@ -89,7 +89,20 @@ const Login = ({ setAccount, setIsAdmin }) => {
             if (!currentAddress) return; // Failed to connect
         }
 
-        // 2. Analyze Credentials
+        // 2. Check Network
+        try {
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const network = await provider.getNetwork();
+            // Localhost hardhat network can be 1337 or 31337
+            if (network.chainId !== 31337n && network.chainId !== 1337n) {
+                alert(`Please switch MetaMask to Localhost 8545 network (Chain ID: 31337 or 1337). Currently on: ${network.chainId}`);
+                return;
+            }
+        } catch (e) {
+            console.error("Network check failed:", e);
+        }
+
+        // 3. Analyze Credentials
         try {
             const provider = new ethers.BrowserProvider(window.ethereum);
             const contract = new ethers.Contract(contractAddress, contractABI, provider);
@@ -114,7 +127,11 @@ const Login = ({ setAccount, setIsAdmin }) => {
             }
         } catch (error) {
             console.error("Login error:", error);
-            alert("Login failed. Please try again.");
+            if (error.code === 'CALL_EXCEPTION') {
+                alert("Login failed: Smart contract not found on this network. Please ensure your local Hardhat node is running and MetaMask is connected to Localhost 8545.");
+            } else {
+                alert(`Login failed: ${error.message || "Please try again."}`);
+            }
         }
     };
 
