@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "chain": "hardhat node --config hardhat.config.cjs"
+    "chain": "hardhat node --config hardhat.config.cjs",
+    "dev": "npm run dev --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "preview": "npm run preview --prefix frontend"
   },
   "keywords": [],
   "author": "",
